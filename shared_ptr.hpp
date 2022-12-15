@@ -43,7 +43,6 @@ shared_ptr<T>::shared_ptr(const element_type& el) : sp::smart_ptr<T>(el)
 shared_ptr<T>::shared_ptr(const shared_ptr& other) : sp::smart_ptr<T>(other)
 {
   ++(*(this->count_ = other.count_));
-  //std::cout << *this->count_ << std::endl;
 }
 
   template <typename T>
@@ -56,7 +55,6 @@ shared_ptr<T>::shared_ptr(shared_ptr&& other) : sp::smart_ptr<T>(other)
   template <typename T>
 shared_ptr<T>::~shared_ptr()
 {
-  std::cout << "shared" << std::endl;
   if (this->count_ != nullptr) {
     if (*this->count_ == 1) {
       delete this->count_;
@@ -68,37 +66,28 @@ shared_ptr<T>::~shared_ptr()
   template <typename T>
 shared_ptr<T>& shared_ptr<T>::operator=(const element_type& el)
 {
-  if (*(this->count_) == 1)
-  {
-    delete this->pointer_;
-    delete this->count_;
+  if (this->count_ != nullptr) {
+    if (*this->count_ == 1) { this->~shared_ptr(); }
+    else { --(*this->count_); }
   }
-  else if (*(this->count_) != 0)
-  {
-    --(*(this->count_));
-  }
+
   this->count_ = new size_type(1);
   this->pointer_ = new element_type{el};
+
   return *this;
 }
 
   template <typename T>
 shared_ptr<T>& shared_ptr<T>::operator=(const shared_ptr& other)
 {
-  //std::cout << "a" << std::endl;
-
   if (this->count_ != nullptr) {
     if (*this->count_ == 1) { this->~shared_ptr(); }
     else { --(*this->count_); }
   }
 
-  //std::cout << "b" << std::endl;
-
   this->pointer_ = other.pointer_;
   this->state_ = other.state_;
   ++(*(this->count_ = other.count_));
-
-  //std::cout << "c" << std::endl;
 
   return *this;
 }
@@ -106,16 +95,15 @@ shared_ptr<T>& shared_ptr<T>::operator=(const shared_ptr& other)
   template <typename T>
 shared_ptr<T>& shared_ptr<T>::operator=(shared_ptr&& other)
 {
-  if (*(this->count_) == 1)
-  {
-    delete this->count_;
-    delete this->pointer_;
+  if (this->count_ != nullptr) {
+    if (*this->count_ == 1) { this->~shared_ptr(); }
+    else { --(*this->count_); }
   }
-  else if (this->count_ != nullptr)
-    --(this->count_);
+
   this->pointer_ = other.pointer_;
   this->count_ = other.count_;
   other = shared_ptr();
+
   return *this;
 }
 

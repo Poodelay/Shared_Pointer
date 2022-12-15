@@ -50,12 +50,9 @@ sp::smart_ptr<T>::smart_ptr(smart_ptr &&other) : smart_ptr{other}
   template <typename T>
 sp::smart_ptr<T>::~smart_ptr()
 {
-  std::cout << "smart" << std::endl;
   if (this->pointer_ != nullptr) {
     if (*this->state_) {
-      std::cout << "kek" << std::endl;
       delete this->pointer_;
-      std::cout << "kek" << std::endl;
     }
   }
 }
